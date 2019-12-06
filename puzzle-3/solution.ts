@@ -23,7 +23,7 @@ const opMap = {
 /**
  * Each Segment is sorted so Segment = [CloserPoint, FurtherPoint]
  */
-function getPaths(start: Point, path: string[]): Segment[] {
+function getPath(start: Point, path: string[]): Segment[] {
     const segments: Segment[] = [];
     let currPoint = start; 
     for (const move of path) {
@@ -138,7 +138,7 @@ function getClosestIntersectionForPaths(left: Segment[], right: Segment[]) {
 const movementsOne = input.movements[0].split(",");
 const movementsTwo = input.movements[1].split(",");
 
-const pathOne = getPaths({x: 0, y: 0}, movementsOne);
-const pathTwo = getPaths({x: 0, y: 0}, movementsTwo);
+const pathOne = getPath({x: 0, y: 0}, movementsOne);
+const pathTwo = getPath({x: 0, y: 0}, movementsTwo);
 
 console.log('Answer: ', manhatDist(getClosestIntersectionForPaths(pathOne, pathTwo)));
