@@ -1,5 +1,6 @@
-// import input from './input.json';
 import input from './input.json';
+// import input from './test_part_two.json'
+// import input from './example_input_2.json'
 import _ from "lodash";
 import assert from 'assert';
 
@@ -67,6 +68,7 @@ function manhatDist(point: Point | null): number {
     return point ? Math.abs(point.x) + Math.abs(point.y) : NaN;
 }
 
+
 function getClosestPoint(points: Array<Point | null>): Point | null {
     return _.sortBy(points, (point: Point | null) => manhatDist(point))[0]
 }
@@ -125,14 +127,61 @@ function getClosestIntersectionForSegments(leftSeg: Segment, rightSeg: Segment):
 
 function getClosestIntersectionForPaths(left: Segment[], right: Segment[]) {
     let closestIntersection: Point | null = null;
-    for (const leftSeg of left.slice(1)) { // The first segments can't intersect
+    for (const leftSeg of left) { // The first segments can't intersect
         for (const rightSeg of right.slice(1)) {
+            
             const maybeClosest = getClosestIntersectionForSegments(leftSeg, rightSeg);
             closestIntersection = getClosestPoint([maybeClosest, closestIntersection]);
         }
     }
 
     return closestIntersection;
+}
+
+function getSegmentLength(segment: Segment) {
+    return Math.abs((segment[1].x - segment[0].x)) + Math.abs((segment[1].y - segment[0].y));
+}
+
+function pointDist(left: Point, right: Point) {
+    return Math.abs((left.y - right.y)) + Math.abs((left.x - right.x));
+}
+
+function getShortestDistanceToPoint(segment: Segment | undefined, point: Point) {    
+    if (segment) {
+        const distOne = pointDist(segment[0], point);
+        const distTwo = pointDist(segment[1], point);
+        return _.min([distOne, distTwo]) as number;
+    }
+
+    assert(point.x === 0 || point.y === 0, 'If not previous segment we expect on coord to be 0');
+    return _.max([point.x, point.y]) as number;
+}
+
+function getShortestPathLengthToIntersection(left: Segment[], right: Segment[]) {
+    let shortestLengthToInt = Infinity;
+    let leftLength = 0;
+    left.forEach((leftSeg, leftIdx) => {
+        let rightLength = 0;
+        right.forEach((rightSeg, rightIdx) => {
+            if (!(leftIdx === 0 && rightIdx === 0)) { 
+                const intersection = getClosestIntersectionForSegments(leftSeg, rightSeg);
+                if (intersection) {
+                    const finalLeftLength = getShortestDistanceToPoint(left[leftIdx - 1], intersection);
+                    const finalRightLength = getShortestDistanceToPoint(right[rightIdx - 1], intersection);
+                    const totalLength = leftLength + finalLeftLength + rightLength + finalRightLength;
+                    console.log("Got total length: ", totalLength);
+                    if (totalLength < shortestLengthToInt) {
+                        shortestLengthToInt = totalLength;
+                    }
+                }
+            }
+
+            rightLength += getSegmentLength(rightSeg);
+        });
+
+        leftLength += getSegmentLength(leftSeg);
+    });
+    return shortestLengthToInt;
 }
 
 const movementsOne = input.movements[0].split(",");
@@ -142,3 +191,4 @@ const pathOne = getPath({x: 0, y: 0}, movementsOne);
 const pathTwo = getPath({x: 0, y: 0}, movementsTwo);
 
 console.log('Answer: ', manhatDist(getClosestIntersectionForPaths(pathOne, pathTwo)));
+console.log('Part 2 answer: ', getShortestPathLengthToIntersection(pathOne, pathTwo));
