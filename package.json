@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/node": "^12.12.14",
     "lodash": "^4.17.15",
     "typescript": "^3.7.3"
   },
