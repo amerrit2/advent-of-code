@@ -29,7 +29,7 @@ function runAmps(program: string, phases: number[]) {
     let nextInput = 0;
     for (const phase of phases) {
         const comp = new IntcodeComputer(program);
-        const output = comp.runProgram([phase, nextInput]);
+        const output = comp.runProgramToOutput([phase, nextInput]);
         if (typeof output !== 'number') {
             throw new Error("Received invalid output :(")   
         }

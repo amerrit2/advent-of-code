@@ -32,14 +32,19 @@ function opMultiply(state: number[], opArgs: number[], modes: ParamModes[]) {
     state[outAddr] = leftVal * rightVal;
 }
 
-function opSaveInput(state: number[], opArgs: number[], modes: ParamModes[], io: IO) {
+function opSaveInput(state: number[], opArgs: number[], modes: ParamModes[], input: number[]) {
+    const nextValue = input.shift()
+    if (!nextValue) {
+        throw new Error("Faile to get next input");
+    }
+
     const [saveAddr] = opArgs;
-    state[saveAddr] = io.getInput();
+    state[saveAddr] = nextValue;
 }
 
-async function opOutput(state: number[], opArgs: number[], modes: ParamModes[], io: IO) {
+function opOutput(state: number[], opArgs: number[], modes: ParamModes[]) {
     const [outAddr] = opArgs;
-    await io.sendOutput(getValFromMode(state, outAddr, modes[0]));
+    return {out: state[outAddr]};    
 }
 
 function opJumpIfTrue(state: number[], opArgs: number[], modes: ParamModes[]) {
@@ -82,7 +87,7 @@ function opEquals(state: number[], opArgs: number[], modes: ParamModes[]) {
     }
 }
 
-type OpExecution = (state: number[], opArgs: number[], modes: ParamModes[], io: IO) => number | void | Promise<void>;
+type OpExecution = (state: number[], opArgs: number[], modes: ParamModes[], it: number[]) => number | void | Object;
 
 const ops: {[index: number]: {argCount: number; execute?: OpExecution}} = {
     1: {
@@ -130,27 +135,28 @@ function parseOperation(operation: number) {
     return {opCode, modes};
 }
 
-async function runProgram(state: number[], io: IO, position = 0): Promise<number[]> {
-    const operation = state[position];
-    const { opCode, modes } = parseOperation(operation);
-    const op = ops[opCode]
+// async function runProgram(state: number[], io: IO, position = 0): Promise<number[]> {
+//     const operation = state[position];
+//     const { opCode, modes } = parseOperation(operation);
+//     const op = ops[opCode]
 
-    if (op === undefined) {
-        throw new Error(`Unrecognized op ${opCode} at position ${position} of ${state}`);
-    }
+//     if (op === undefined) {
+//         throw new Error(`Unrecognized op ${opCode} at position ${position} of ${state}`);
+//     }
 
-    if (!op.execute) {
-        return state;
-    }
+//     if (!op.execute) {
+//         return state;
+//     }
 
-    const opArgs = state.slice(position + 1, position + op.argCount + 1);
-    const newPosition = await op.execute(state, opArgs, modes, io);
-    if (newPosition) {
-        return runProgram(state, io, newPosition);
-    }
+//     const opArgs = state.slice(position + 1, position + op.argCount + 1);
 
-    return runProgram(state, io, position + op.argCount + 1);
-}
+//     const result = await op.execute(state, opArgs, modes, );
+//     if (newPosition) {
+//         return runProgram(state, io, newPosition);
+//     }
+
+//     return runProgram(state, io, position + op.argCount + 1);
+// }
 
 function parseProgram(input: string){
     return input.split(",").map(val => {
@@ -162,15 +168,42 @@ function parseProgram(input: string){
     });    
 }
 
-
-
 export class IntcodeComputer {
     private _program: number[];
+    private _position = 0;
+
     constructor(programInput: string) {
         this._program = parseProgram(programInput);
     }
 
-    public runProgram(io: IO) {
-        return runProgram(this._program, io);
+    public runProgramToOutput(input: number[]): number | null {
+        const operation = this._program[this._position];
+        const { opCode, modes } = parseOperation(operation);
+        const op = ops[opCode]
+
+        if (op === undefined) {
+            throw new Error(`Unrecognized op ${opCode} at position ${this._position} of ${this._state}`);
+        }
+
+        if (!op.execute) {
+            return null;
+        }
+
+        const opArgs = this._program.slice(this._position + 1, this._position + op.argCount + 1);
+
+        const result = op.execute(this._program, opArgs, modes, input);
+        if (result === undefined) {
+            // Normal operation, continue
+            this._position = this._position + op.argCount + 1;
+            return this.runProgramToOutput(input);
+        } else if (typeof result === 'object') {
+            // Output
+            return (result as any).out;
+        }
+
+        assert(typeof result === 'number', `Result should be a number here. got: ${result}`);
+        this._position = result as number;
+        return this.runProgramToOutput(input);
+        
     }
 }
