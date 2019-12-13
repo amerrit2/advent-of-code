@@ -1,6 +1,6 @@
 import assert = require("assert");
 import _ from 'lodash';
-import input from './input';
+// import input from './input';
 
 // const input = `.#..#
 // .....
@@ -92,33 +92,33 @@ function makePolarCoords(coords: Point[]) {
     return polarCoords;
 }
 
-const asteroidCoords = makeCoords(input);
+// const asteroidCoords = makeCoords(input);
 
 // console.log(asteroidCoords);
 // console.log(makeRelativeCoords(asteroidCoords, asteroidCoords[3]));
 // console.log(calcThetas(asteroidCoords));
 
-let maxVisible = 0;
-let bestAsteroid: Point | null = null;;
-for (const asteroid of asteroidCoords) {
-    const relCoords = makeRelativeCoords(asteroidCoords, asteroid);
-    const polarCoords = makePolarCoords(relCoords);
-    const numVisible = _.uniq(_.map(polarCoords, point => point.theta)).length;
-    if (numVisible > maxVisible) {
-        bestAsteroid = asteroid;
-        maxVisible = numVisible;
-    }
-}
+// let maxVisible = 0;
+// let bestAsteroid: Point | null = null;;
+// for (const asteroid of asteroidCoords) {
+//     const relCoords = makeRelativeCoords(asteroidCoords, asteroid);
+//     const polarCoords = makePolarCoords(relCoords);
+//     const numVisible = _.uniq(_.map(polarCoords, point => point.theta)).length;
+//     if (numVisible > maxVisible) {
+//         bestAsteroid = asteroid;
+//         maxVisible = numVisible;
+//     }
+// }
 
-console.log("Max visible: ", maxVisible);
+// console.log("Max visible: ", maxVisible);
 
-if (!bestAsteroid) {
-    throw new Error("Best Asteroid not found");
-}
+// if (!bestAsteroid) {
+//     throw new Error("Best Asteroid not found");
+// }
 
-const polarCoordsFromLaser = makePolarCoords(makeRelativeCoords(asteroidCoords, bestAsteroid));
+// const polarCoordsFromLaser = makePolarCoords(makeRelativeCoords(asteroidCoords, bestAsteroid));
 
-console.log(polarCoordsFromLaser);
+// console.log(polarCoordsFromLaser);
 
 
 

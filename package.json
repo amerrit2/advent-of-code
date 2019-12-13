@@ -11,10 +11,12 @@
   "dependencies": {
     "@types/node": "^12.12.14",
     "lodash": "^4.17.15",
+    "log-update": "^3.3.0",
     "typescript": "^3.7.3"
   },
   "devDependencies": {
     "@types/assert": "^1.4.3",
-    "@types/lodash": "^4.14.149"
+    "@types/lodash": "^4.14.149",
+    "@types/log-update": "^3.1.0"
   }
 }
