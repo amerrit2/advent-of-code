@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "@types/node": "^12.12.14",
+    "canvas": "^2.6.0",
     "lodash": "^4.17.15",
     "log-update": "^3.3.0",
     "typescript": "^3.7.3"
