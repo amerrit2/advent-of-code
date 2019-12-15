@@ -1,4 +1,4 @@
-import input from './input.json';
+import input from './input.json'
 // import input from './test_part_two.json'
 // import input from './example_input_2.json'
 import _ from "lodash";
