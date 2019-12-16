@@ -54,3 +54,4 @@ console.log(canvasState.reduce((sum, paint) => {
     }
     return sum;
 }, 0));
+

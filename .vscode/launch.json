@@ -7,8 +7,8 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Puzzle-13",
-            "program": "${workspaceFolder}/out/puzzle-13/solution.js",
+            "name": "Puzzle-14",
+            "program": "${workspaceFolder}/out/puzzle-14/solution.js",
             "skipFiles": [
                 "<node_internals>/**"
             ],
