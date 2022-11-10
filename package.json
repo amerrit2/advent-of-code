@@ -20,7 +20,7 @@
     "@types/assert": "^1.4.3",
     "@types/lodash": "^4.14.149",
     "@types/log-update": "^3.1.0",
-    "electron": "^7.1.5"
+    "electron": "^18.3.7"
   },
   "copyFiles": [
     {
